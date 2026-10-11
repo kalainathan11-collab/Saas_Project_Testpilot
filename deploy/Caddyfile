@@ -1,0 +1,26 @@
+# Caddy obtains and renews the Let's Encrypt certificate for {$DOMAIN} automatically.
+# DNS for {$DOMAIN} must point at this server and ports 80/443 must be open.
+{$DOMAIN} {
+	encode zstd gzip
+
+	# The SPA owns /auth/callback (Google sign-in landing page); everything else under /auth
+	# is the API. Listed first so it is not swallowed by the /auth/* matcher below.
+	@spa_callback path /auth/callback
+	handle @spa_callback {
+		reverse_proxy frontend:8080
+	}
+
+	@api path /api/* /auth/* /health
+	handle @api {
+		reverse_proxy backend:8000
+	}
+
+	handle {
+		reverse_proxy frontend:8080
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+}
