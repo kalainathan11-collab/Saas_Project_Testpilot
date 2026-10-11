@@ -1,0 +1,8 @@
+# Rendered to /etc/nginx/conf.d/security-headers.inc and included per location.
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-Frame-Options "DENY" always;
+add_header Referrer-Policy "no-referrer" always;
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()" always;
+# style-src 'unsafe-inline' is required: framer-motion and chart.js set inline style attributes.
+# connect-src: 'self' plus the API origin (API_ORIGIN, defaults to the build-time VITE_API_URL).
+add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ${API_ORIGIN}; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
