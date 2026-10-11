@@ -90,6 +90,14 @@ for _ in $(seq 1 60); do
 done
 [ "${ok:-0}" = 1 ] || { docker compose --env-file "$ENV_FILE" -f docker-compose.prod.yml logs --tail=50 backend; die "backend did not become healthy"; }
 
+# --- 7. Nightly database backup (02:30 UTC, 14 days retained) ----------------------------
+log "Installing nightly database backup"
+chmod +x "$APP_DIR/deploy/backup.sh"
+cat > /etc/cron.d/testpilot-backup <<CRON
+30 2 * * * root APP_DIR=$APP_DIR $APP_DIR/deploy/backup.sh >> /var/log/testpilot-backup.log 2>&1
+CRON
+chmod 644 /etc/cron.d/testpilot-backup
+
 docker compose --env-file "$ENV_FILE" -f docker-compose.prod.yml ps
 printf '\n\033[1;32mDeployed.\033[0m  https://%s\n' "$DOMAIN"
 echo "Secrets are in $APP_DIR/$ENV_FILE (root only). Back up the 'postgres_data' volume regularly."
