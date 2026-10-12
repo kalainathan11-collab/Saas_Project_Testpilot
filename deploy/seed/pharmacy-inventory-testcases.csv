@@ -1,0 +1,48 @@
+title,module,type,priority,status,preconditions,steps,expected_result
+INV-001 Add a new medicine,Medicine master,Functional,High,Ready,Add medicine,"Open Medicines > New
+Enter name, generic name, strength, dosage form, manufacturer, HSN, GST %, MRP and reorder level
+Click Save","Medicine is saved, appears in the list with a unique code"
+INV-002 Mandatory fields are enforced,Medicine master,Functional,High,Ready,,"Open Medicines > New
+Leave name or MRP empty
+Click Save",Validation errors are shown and nothing is saved
+INV-003 Duplicate medicine is rejected,Medicine master,Functional,Medium,Ready,Medicine exists,"Add the same name, strength and manufacturer a second time
+Click Save",Second save is rejected with a duplicate message
+INV-004 Zero or negative MRP is rejected,Medicine master,Functional,Medium,Ready,,"Enter MRP -5, save
+Enter MRP 0, save",Both values are rejected
+INV-005 Flag controlled / Schedule H drug,Medicine master,Functional,High,Ready,,"Tick Schedule H or Narcotic on a medicine
+Save",Flag is saved; dispensing later requires a prescription
+"INV-006 Search by name, generic name and barcode",Medicine master,UI,Medium,Ready,Several medicines exist,"Search 'para'
+Search 'paracetamol'
+Scan the barcode",The correct medicine is returned for each search
+INV-010 Add a batch with expiry,Batches and expiry,Functional,High,Ready,Medicine exists,"Add stock with batch number, manufacturing date, expiry date, quantity and purchase price
+Save",Batch is created and linked to the medicine
+INV-011 Expiry before manufacture date is rejected,Batches and expiry,Functional,High,Ready,,"Enter an expiry date earlier than the manufacture date
+Save",Entry is rejected with a clear message
+INV-012 Already expired batch cannot be received,Batches and expiry,Functional,High,Ready,,Receive a batch whose expiry date is in the past,Blocked or warned; it cannot be added to sellable stock
+INV-013 Same batch number received twice,Batches and expiry,Functional,Medium,Ready,Batch B123 exists,Receive batch B123 again,Quantity merges into the batch or a clear conflict is shown; no duplicate batch
+INV-014 Near-expiry alerts,Batches and expiry,Functional,High,Ready,"Batches expiring in 30, 60 and 90 days exist",Open the near-expiry list,All three batches appear with the correct days left
+INV-015 FEFO batch selection,Batches and expiry,Functional,High,Ready,Two batches with stock; one expires earlier,Dispense the medicine,The earlier-expiry batch is used first
+INV-016 Expired batch is blocked from sale,Batches and expiry,Functional,High,Ready,A batch passes its expiry date,Try to sell from that batch,Batch is excluded from sale and listed under expired stock
+INV-020 Receive stock against a purchase order,Stock in,Functional,High,Ready,Open PO exists,"Create a GRN for the PO with the full quantity
+Save","Stock increases, PO closes and a GRN number is generated"
+INV-021 Partial receipt keeps PO open,Stock in,Functional,High,Ready,Open PO exists,Receive less than the ordered quantity,Stock increases by the received amount; PO stays open with the balance
+INV-022 Over-receipt is controlled,Stock in,Functional,Medium,Ready,Open PO exists,Receive more than the ordered quantity,A warning is shown or the entry is blocked per policy
+INV-023 Return damaged goods to supplier,Stock in,Functional,Medium,Ready,Stock received,Create a supplier return for damaged quantity,Stock decreases and a debit note is created
+INV-030 Stock decreases on sale,Stock out,Functional,High,Ready,Batch with stock,Sell 5 units of the batch,On-hand quantity reduces by exactly 5
+INV-031 Cannot sell more than available,Stock out,Functional,High,Ready,Batch with 3 units,Try to sell 10 units,Sale is blocked with an insufficient stock message
+INV-032 Manual adjustment records a reason,Stock out,Functional,High,Ready,,"Adjust stock by -2 with reason 'damaged'
+Save","Stock reduces; entry stores user, time and reason"
+INV-033 Adjustment without reason is rejected,Stock out,Functional,Medium,Ready,,Save an adjustment with the reason left blank,Entry is rejected
+INV-034 Transfer stock between stores,Stock out,Functional,Medium,Ready,Two stores configured,Transfer 10 units from store A to store B,Store A is reduced by 10; store B increases by 10 once accepted; in-transit state is visible
+INV-035 Customer return goes back to stock,Stock out,Functional,Medium,Ready,A completed sale exists,Process a return within the return policy,Stock increases in the correct batch with a sellable-condition check
+INV-040 Low-stock alert,Reorder and alerts,Functional,High,Ready,Reorder level set,Reduce stock below the reorder level,Item appears in the low-stock list and raises an alert
+INV-041 Zero stock display,Reorder and alerts,UI,Medium,Ready,,Sell down to zero units,Item shows Out of stock and cannot be sold
+INV-050 Stock audit variance needs approval,Audit and reports,Functional,High,Ready,,Enter a physical count that differs from the system quantity,Variance is calculated and the adjustment requires approval
+INV-051 Role-based access,Audit and reports,Security,High,Ready,Pharmacist and manager accounts exist,"Log in as pharmacist and try to edit prices and approve adjustments
+Repeat as store manager",Pharmacist is blocked; manager is allowed
+INV-052 Audit trail for price change,Audit and reports,Security,High,Ready,,"Edit a medicine price
+Open its audit history","User, time, old value and new value are recorded and visible"
+INV-053 Stock valuation report,Audit and reports,Functional,Medium,Ready,Known test data,Run the stock valuation report,Totals equal quantity x purchase price per batch
+INV-054 Expiry report export,Audit and reports,Functional,Low,Ready,,Export the near-expiry report to CSV,File opens with the correct columns and rows
+INV-055 Concurrent sale of last unit,Audit and reports,Performance,High,Ready,One unit left,Two users sell the last unit at the same time,"One sale succeeds, the other gets insufficient stock; stock never goes negative"
+INV-056 Search speed on a large catalogue,Audit and reports,Performance,Low,Ready,"50,000 medicines loaded",Search for a common term,Results are returned in under 2 seconds
